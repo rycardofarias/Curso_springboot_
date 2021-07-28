@@ -2,6 +2,7 @@ package com.rycardofarias.com.backend.services;
 
 import com.rycardofarias.com.backend.entities.User;
 import com.rycardofarias.com.backend.repositories.UserRepository;
+import com.rycardofarias.com.backend.services.exceptions.ResourceNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -20,7 +21,7 @@ public class UserService {
 
     public User findById(Long id){
         Optional<User> obj = repository.findById(id);
-        return obj.get();
+        return obj.orElseThrow(() -> new ResourceNotFoundException(id));
     }
     public User insert(User obj){
         return repository.save(obj);
@@ -39,4 +40,6 @@ public class UserService {
         entity.setEmail(obj.getEmail());
         entity.setPhone(obj.getPhone());
     }
+
+
 }
