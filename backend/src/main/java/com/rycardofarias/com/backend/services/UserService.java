@@ -2,8 +2,11 @@ package com.rycardofarias.com.backend.services;
 
 import com.rycardofarias.com.backend.entities.User;
 import com.rycardofarias.com.backend.repositories.UserRepository;
+import com.rycardofarias.com.backend.services.exceptions.DatabaseException;
 import com.rycardofarias.com.backend.services.exceptions.ResourceNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -27,7 +30,13 @@ public class UserService {
         return repository.save(obj);
     }
     public void delete (Long id){
-        repository.deleteById(id);
+        try{
+            repository.deleteById(id);
+        }catch (EmptyResultDataAccessException e){
+            throw new ResourceNotFoundException(id);
+        }catch (DataIntegrityViolationException e){
+            throw new DatabaseException(e.getMessage());
+        }
     }
     public User update (Long id, User obj){
         User entity = repository.getOne(id);
